@@ -156,7 +156,7 @@ Use EditorUserSettings.SetConfigValue(key, value).
             }
             if (GUILayout.Button(new GUIContent("Blog", ""), GUILayout.Width(35)))
             {
-                Application.OpenURL("https://zenigane138.hateblo.jp/?from=ab1");
+                Application.OpenURL("https://zenigane138.hateblo.jp/?from=editorusersettingsviewer");
             }
             if (GUILayout.Button(new GUIContent("Twitter", ""), GUILayout.Width(55)))
             {
