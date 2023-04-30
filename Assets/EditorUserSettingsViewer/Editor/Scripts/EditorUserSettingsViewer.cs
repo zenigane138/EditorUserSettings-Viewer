@@ -12,7 +12,8 @@ public class EditorUserSettingsViewer : EditorWindow
     private string _filterText = "";
     private string[] _cachedLines;
 
-    private bool _wrapLabelField;
+    private bool _wordWrap = false;
+    private bool _caseSensitive = false;
 
 #if UNITY_2017_1_OR_NEWER
     [MenuItem("Window/OkaneGames/", priority = Int32.MaxValue)]
@@ -81,10 +82,11 @@ Use EditorUserSettings.SetConfigValue(key, value).
             {
                 _filterText = "";
             }
+            DrawToggleButton(ref _caseSensitive, new GUIContent("case-sensitive"), false);
         }
         EditorGUILayout.EndScrollView();
 
-        _wrapLabelField = EditorGUILayout.Toggle("Wrap Label Text", _wrapLabelField);
+        DrawToggleButton(ref _wordWrap, new GUIContent("Word Wrap"), true);
 
         // 行データ
         _scroll = EditorGUILayout.BeginScrollView(_scroll);
@@ -101,21 +103,23 @@ Use EditorUserSettings.SetConfigValue(key, value).
                 }
 
                 // フィルタリング処理
-                if (_filterText.Length > 0 && !line.Contains(_filterText))
+                //if (_filterText.Length > 0 && !line.Contains(_filterText))
+                if (_caseSensitive && _filterText.Length > 0 && !line.Contains(_filterText)
+                    || !_caseSensitive && _filterText.Length > 0 && !line.ToLower().Contains(_filterText.ToLower()))
                 {
                     continue;
                 }
 
                 count++;
 
-                GUILayout.Box("", GUILayout.ExpandWidth(true), GUILayout.Height(1));
-                GUIContent labelText = new GUIContent(line, line);
-                GUIStyle labelStyle = new GUIStyle(EditorStyles.label);
-                if (_wrapLabelField)
+                GUIStyle style = new GUIStyle(EditorStyles.textField);
+                if (_wordWrap)
                 {
-                    labelStyle.wordWrap = true;
+                    style.wordWrap = true;
                 }
-                EditorGUILayout.LabelField(labelText, labelStyle);
+                // EditorGUILayout.TextArea に EditorStyles.textField を設定すると
+                // wordWrap なしでは1行、ありでは複数行スタイルになってちょうど良い感じになる
+                EditorGUILayout.TextArea(line, style);
             }
 
             if(count == 0)
@@ -127,6 +131,17 @@ Use EditorUserSettings.SetConfigValue(key, value).
         EditorGUILayout.EndScrollView();
 
         DrawZeniganeLink();
+    }
+
+    private void DrawToggleButton(ref bool settingFlag, GUIContent guiContent, bool enabledHorizontal = false)
+    {
+        if (enabledHorizontal) EditorGUILayout.BeginHorizontal();
+        if (settingFlag != EditorGUILayout.Toggle(settingFlag, GUILayout.Width(15)) ||
+            GUILayout.Button(guiContent, new GUIStyle(GUI.skin.label), GUILayout.ExpandWidth(false)))
+        {
+            settingFlag ^= true;
+        }
+        if (enabledHorizontal) EditorGUILayout.EndHorizontal();
     }
 
     private void DrawZeniganeLink()
