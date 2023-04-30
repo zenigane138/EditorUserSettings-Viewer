@@ -1,7 +1,7 @@
 {
     "name": "com.okanegames.editorusersettings-viewer",
     "displayName": "EditorUserSettings Viewer",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "unity": "2021.1",
     "description": "Editor extension window displaying the contents of EditorUserSettings in Unity.",
     "author": {
